@@ -29,7 +29,7 @@
     .proj-slide image-slot::part(frame) { border-radius: 12px; }
     /* image-slot.js sets touch-action:none on its inner <img> for reframe mode;
        this site is read-only, so restore normal touch/trackpad scrolling. */
-    .proj-slide image-slot::part(image) { touch-action: auto; }
+    image-slot::part(image) { touch-action: auto; }
     image-slot[src]::part(ring) { display: none; }
     .proj-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; border-radius: 50%; border: none; background: rgba(15, 14, 12, 0.7); color: #F4F1EA; font-family: 'Anton', sans-serif; font-size: 22px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; z-index: 2; opacity: 0; transition: opacity 0.25s ease, background 0.25s ease, color 0.25s ease; }
     .proj-slideshow:hover .proj-arrow { opacity: 1; }
@@ -55,6 +55,14 @@
     #lightbox-prev, #lightbox-next { flex: 0 0 auto; width: 56px; height: 56px; border-radius: 50%; background: rgba(15, 14, 12, 0.7); border: 1px solid #2E2A24; color: #F4F1EA; font-family: 'Anton', sans-serif; font-size: 36px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0 0 4px; transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease; }
     #lightbox-prev:hover, #lightbox-next:hover { background: oklch(78% 0.15 75); color: #0F0E0C; border-color: oklch(78% 0.15 75); }
     #lightbox.single #lightbox-prev, #lightbox.single #lightbox-next { display: none; }
+    @media (max-width: 640px) {
+      #lightbox { padding: 16px; gap: 0; }
+      #lightbox-img, #lightbox.single #lightbox-img { max-width: 100%; max-height: calc(100% - 76px); }
+      #lightbox-prev, #lightbox-next { position: absolute; bottom: 18px; width: 48px; height: 48px; font-size: 30px; }
+      #lightbox-prev { left: 18px; }
+      #lightbox-next { right: 18px; }
+      #lightbox-close { top: 14px; right: 14px; width: 40px; height: 40px; font-size: 22px; }
+    }
 
     /* ---- pdf download badges ---- */
     .pdf-dl-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
@@ -134,8 +142,8 @@
       nav > div { gap: 14px !important; }
       nav a[href="#about"],
       nav a[href="#experience"],
-      nav a[href="#work"],
-      nav a[href="uploads/resume.pdf"] { display: none !important; }
+      nav a[href="#work"] { display: none !important; }
+      nav a[href="uploads/resume.pdf"] { font-size: 12px !important; letter-spacing: 0.14em !important; }
       nav a[href="#contact"] { padding: 8px 16px !important; font-size: 12px !important; }
 
       /* Hero */
@@ -774,10 +782,13 @@ class Component extends DCLogic {
     if (this.state.statsStarted) return;
     this.setState({ statsStarted: true });
     const targets = { years: 4, projects: 5, patents: 3, prototypes: 10 };
-    const dur = 1500;
-    const t0 = performance.now();
-    const step = (t) => {
-      const p = Math.min(1, (t - t0) / dur);
+    // ~15 updates over 1.5s — full-page React reconciliation each tick, so
+    // 60fps thrashed scroll on phones while the band was in view.
+    const steps = 15, interval = 100;
+    let i = 0;
+    const tick = () => {
+      i++;
+      const p = Math.min(1, i / steps);
       const e = 1 - Math.pow(1 - p, 3);
       this.setState({
         years: Math.round(targets.years * e),
@@ -785,9 +796,9 @@ class Component extends DCLogic {
         patents: Math.round(targets.patents * e),
         prototypes: Math.round(targets.prototypes * e)
       });
-      if (p < 1) requestAnimationFrame(step);
+      if (i < steps) setTimeout(tick, interval);
     };
-    requestAnimationFrame(step);
+    setTimeout(tick, interval);
   }
 
   componentWillUnmount() {
