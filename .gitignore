@@ -21,6 +21,9 @@ build/
 .cache/
 *.log
 
+# Cloudflare Workers / Wrangler local state
+.wrangler/
+
 # Playwright test artifacts
 playwright-out/
 .playwright-*.mjs
