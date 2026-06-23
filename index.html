@@ -65,17 +65,11 @@
       #lightbox-close { top: 14px; right: 14px; width: 40px; height: 40px; font-size: 22px; }
     }
 
-    /* ---- pdf download badges ---- */
-    .pdf-dl-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
-    .pdf-dl { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: oklch(78% 0.15 75); text-decoration: none; border: 1.5px solid #2E2A24; border-radius: 999px; padding: 8px 14px; transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.25s ease; }
-    .pdf-dl:hover { background: oklch(78% 0.15 75); color: #0F0E0C; border-color: oklch(78% 0.15 75); transform: translateY(-2px); }
-    .pdf-dl-arrow { font-size: 14px; line-height: 1; }
-
     @keyframes marq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
     @keyframes cue { 0% { transform: scaleY(0); transform-origin: top; } 45% { transform: scaleY(1); transform-origin: top; } 55% { transform: scaleY(1); transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
 
     /* ---- back to top button ---- */
-    #to-top { position: fixed; bottom: 28px; right: 28px; width: 52px; height: 52px; border-radius: 50%; background: oklch(78% 0.15 75); color: #0F0E0C; border: none; font-family: 'Anton', sans-serif; font-size: 26px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0 0 3px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4); opacity: 0; pointer-events: none; transform: translateY(12px); transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease; z-index: 85; text-decoration: none; }
+    #to-top { position: fixed; bottom: 28px; right: 28px; width: 52px; height: 52px; border-radius: 50%; background: oklch(78% 0.15 75); color: #0F0E0C; border: none; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4); opacity: 0; pointer-events: none; transform: translateY(12px); transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease; z-index: 85; text-decoration: none; }
     #to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
     #to-top:hover { background: #F4F1EA; }
     @media (max-width: 640px) { #to-top { bottom: 20px; right: 20px; width: 46px; height: 46px; font-size: 22px; } }
@@ -89,6 +83,15 @@
     }
     #hero-content-grid { z-index: 2; }
     #hero-scroll-cue { z-index: 2; }
+
+    /* ---- hero loading overlay (shows the BL logo until the video is ready) ---- */
+    #hero-loader { position: absolute; inset: 0; z-index: 4; display: flex; align-items: center; justify-content: center; background: #0F0E0C; transition: opacity 0.7s ease; }
+    #hero-loader.hidden { opacity: 0; pointer-events: none; }
+    #hero-loader .loader-inner { position: relative; width: 132px; height: 132px; display: flex; align-items: center; justify-content: center; }
+    #hero-loader img { width: 80px; height: 80px; object-fit: contain; animation: loaderPulse 1.5s ease-in-out infinite; }
+    #hero-loader .loader-ring { position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(244, 241, 234, 0.12); border-top-color: oklch(78% 0.15 75); animation: loaderSpin 0.9s linear infinite; }
+    @keyframes loaderPulse { 0%, 100% { opacity: 0.5; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1); } }
+    @keyframes loaderSpin { to { transform: rotate(360deg); } }
 
     /* ---- tablet ---- */
     @media (max-width: 900px) {
@@ -229,7 +232,7 @@
         gap: 16px !important;
       }
       #contact > div > div[data-reveal="0.2"] > div { gap: 18px !important; flex-wrap: wrap; }
-      #contact > div > div[data-reveal="0.2"] > span { font-size: 13px !important; }
+      #contact > div > div[data-reveal="0.2"] > span { font-size: 17px !important; }
     }
   </style>
 </helmet>
@@ -242,8 +245,8 @@
   <!-- custom cursor ring -->
   <div id="cur-ring" style="position: fixed; top: 0; left: 0; width: 36px; height: 36px; border: 1.5px solid oklch(78% 0.15 75); border-radius: 50%; pointer-events: none; z-index: 99; transform: translate(-100px, -100px); opacity: 0;"></div>
 
-  <!-- back to top -->
-  <a id="to-top" href="#top" aria-label="Back to top">&#8593;</a>
+  <!-- home / back to top -->
+  <a id="to-top" href="#top" aria-label="Home"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.3V21h5v-6h4v6h5V9.3"></path></svg></a>
 
   <!-- BL logo (separate from nav so it isn't affected by mix-blend-mode) -->
   <a href="#top" aria-label="Ben Lockwood — home" style="position: fixed; top: 8px; left: 24px; z-index: 81; display: block; width: 96px; height: 96px;">
@@ -267,6 +270,12 @@
       <source src="uploads/projects/coffee-robot.mp4" type="video/mp4">
     </video>
     <div id="hero-video-overlay" aria-hidden="true"></div>
+    <div id="hero-loader" aria-hidden="true">
+      <div class="loader-inner">
+        <span class="loader-ring"></span>
+        <img src="./logo.png" alt="">
+      </div>
+    </div>
 
     <div id="hero-content-grid" style="position: relative; display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 48px; align-items: center; max-width: 1280px; margin: 0 auto; width: 100%;">
       <div style="display: flex; flex-direction: column; gap: 28px;">
@@ -282,6 +291,7 @@
         <div data-reveal="0.3" style="display: flex; gap: 16px; margin-top: 8px;">
           <a href="#work" style="background: oklch(78% 0.15 75); color: #0F0E0C; text-decoration: none; font-weight: 700; font-size: 14px; letter-spacing: 0.1em; padding: 16px 32px; border-radius: 999px; transition: transform 0.25s ease;" style-hover="transform: translateY(-3px)">SEE MY WORK</a>
           <a href="#contact" style="border: 1.5px solid #3A362F; color: #F4F1EA; text-decoration: none; font-weight: 700; font-size: 14px; letter-spacing: 0.1em; padding: 16px 32px; border-radius: 999px; transition: border-color 0.25s ease, transform 0.25s ease;" style-hover="border-color: oklch(78% 0.15 75); transform: translateY(-3px)">GET IN TOUCH</a>
+          <a href="uploads/resume.pdf" download style="border: 1.5px solid #3A362F; color: #F4F1EA; text-decoration: none; font-weight: 700; font-size: 14px; letter-spacing: 0.1em; padding: 16px 32px; border-radius: 999px; transition: border-color 0.25s ease, transform 0.25s ease;" style-hover="border-color: oklch(78% 0.15 75); transform: translateY(-3px)">DOWNLOAD RESUME ↓</a>
         </div>
       </div>
 
@@ -320,7 +330,7 @@
           </div>
           <div data-reveal="0.35" style="display: flex; flex-direction: column; gap: 6px; border-top: 1px solid #24211C; padding-top: 16px;">
             <span style="font-size: 11px; letter-spacing: 0.24em; color: #8A857B; font-weight: 600;">EDUCATION</span>
-            <span style="font-size: 17px; font-weight: 500;">B.S. Mechatronics, Minor in Robotics — LSSU, December 2026 · A.A.S. Manufacturing Engineering Technologies</span>
+            <span style="font-size: 17px; font-weight: 500;">B.S. Mechatronics, Minor in Robotics — LSSU, December 2026 · Manufacturing Engineering Technologies A.A.S.</span>
           </div>
           <div data-reveal="0.4" style="display: flex; flex-direction: column; gap: 6px; border-top: 1px solid #24211C; padding-top: 16px;">
             <span style="font-size: 11px; letter-spacing: 0.24em; color: #8A857B; font-weight: 600;">CURRENTLY</span>
@@ -341,7 +351,7 @@
       </div>
 
       <div data-reveal="0.05" style="display: grid; grid-template-columns: 160px 1fr 1fr; gap: 24px; align-items: center; padding: 36px 24px; border-bottom: 1px solid #24211C; transition: background 0.3s ease, padding-left 0.3s ease; border-radius: 12px;" style-hover="background: #161412; padding-left: 40px;">
-        <span style="font-size: 14px; color: #8A857B; font-weight: 600;">2026 — NOW</span>
+        <span style="font-size: 14px; color: #8A857B; font-weight: 600;">PRESENT</span>
         <span style="font-family: 'Anton', sans-serif; font-size: 30px; letter-spacing: 0.02em;">DESIGN ENGINEERING INTERN</span>
         <span style="font-size: 16px; color: #B8B2A6;">Exmark Manufacturing, Beatrice, NE — Roll Over Protection Systems for operator safety</span>
       </div>
@@ -435,11 +445,6 @@
               <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: #B8B2A6; border: 1px solid #2E2A24; border-radius: 999px; padding: 6px 14px;">DESIGN</span>
               <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: #B8B2A6; border: 1px solid #2E2A24; border-radius: 999px; padding: 6px 14px;">2025</span>
             </div>
-            <div class="pdf-dl-row">
-              <a class="pdf-dl" href="uploads/dealer-box-final-report.pdf" download><span class="pdf-dl-arrow">↓</span><span>FINAL REPORT</span></a>
-              <a class="pdf-dl" href="uploads/dealer-box-drawings.pdf" download><span class="pdf-dl-arrow">↓</span><span>DRAWINGS</span></a>
-              <a class="pdf-dl" href="uploads/dealer-box-dic.pdf" download><span class="pdf-dl-arrow">↓</span><span>DIC</span></a>
-            </div>
           </div>
         </div>
         <div data-reveal="0.2" style="border: 1px solid #24211C; border-radius: 20px; overflow: hidden; transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), border-color 0.35s ease; background: #131110;" style-hover="transform: translateY(-8px); border-color: oklch(78% 0.15 75);">
@@ -456,9 +461,6 @@
               <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: #B8B2A6; border: 1px solid #2E2A24; border-radius: 999px; padding: 6px 14px;">HMI</span>
               <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: #B8B2A6; border: 1px solid #2E2A24; border-radius: 999px; padding: 6px 14px;">EMBEDDED</span>
               <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: #B8B2A6; border: 1px solid #2E2A24; border-radius: 999px; padding: 6px 14px;">2025</span>
-            </div>
-            <div class="pdf-dl-row">
-              <a class="pdf-dl" href="uploads/touch-screen-project.pdf" download><span class="pdf-dl-arrow">↓</span><span>PROJECT PDF</span></a>
             </div>
           </div>
         </div>
@@ -480,9 +482,6 @@
               <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: #B8B2A6; border: 1px solid #2E2A24; border-radius: 999px; padding: 6px 14px;">FIXTURES</span>
               <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: #B8B2A6; border: 1px solid #2E2A24; border-radius: 999px; padding: 6px 14px;">SCHEMATICS</span>
               <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: #B8B2A6; border: 1px solid #2E2A24; border-radius: 999px; padding: 6px 14px;">2024 — 25</span>
-            </div>
-            <div class="pdf-dl-row">
-              <a class="pdf-dl" href="uploads/fixture-testing-results.pdf" download><span class="pdf-dl-arrow">↓</span><span>TESTING RESULTS</span></a>
             </div>
           </div>
         </div>
@@ -506,9 +505,6 @@
               <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: #B8B2A6; border: 1px solid #2E2A24; border-radius: 999px; padding: 6px 14px;">PROTOTYPING</span>
               <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: #B8B2A6; border: 1px solid #2E2A24; border-radius: 999px; padding: 6px 14px;">COST ANALYSIS</span>
               <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: #B8B2A6; border: 1px solid #2E2A24; border-radius: 999px; padding: 6px 14px;">2024</span>
-            </div>
-            <div class="pdf-dl-row">
-              <a class="pdf-dl" href="uploads/3d-printing-program.pdf" download><span class="pdf-dl-arrow">↓</span><span>PROGRAM PROPOSAL</span></a>
             </div>
           </div>
         </div>
@@ -575,7 +571,7 @@
       </div>
       <a data-reveal="0.1" href="{{ mailto }}" style="text-decoration: none; font-family: 'Anton', sans-serif; font-size: clamp(60px, 10vw, 140px); line-height: 0.95; letter-spacing: 0.01em; color: #F4F1EA; transition: color 0.3s ease;" style-hover="color: oklch(78% 0.15 75);">LET'S TALK ↗</a>
       <div data-reveal="0.2" style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #24211C; padding-top: 32px; flex-wrap: wrap; gap: 20px;">
-        <span style="font-size: 21px; color: #8A857B;">{{ email }} · (989) 798-1865 · St. Charles, MI</span>
+        <span style="font-size: 27px; font-weight: 500; color: #F4F1EA;">{{ email }} · (989) 798-1865 · St. Charles, MI</span>
         <div style="display: flex; gap: 28px;">
           <a href="uploads/resume.pdf" download style="color: #B8B2A6; text-decoration: none; font-size: 20px; font-weight: 600; letter-spacing: 0.16em; transition: color 0.25s ease;" style-hover="color: oklch(78% 0.15 75);">RESUME PDF ↓</a>
         </div>
@@ -601,6 +597,8 @@ class Component extends DCLogic {
     // React may not pass through HTML's `autoplay` attribute (it expects camelCase),
     // so call .play() explicitly. Muted+inline lets it play without user gesture.
     const v = document.getElementById('hero-video');
+    const loader = document.getElementById('hero-loader');
+    const hideLoader = () => { if (loader) loader.classList.add('hidden'); };
     if (v) {
       v.muted = true;
       v.defaultMuted = true;
@@ -611,10 +609,20 @@ class Component extends DCLogic {
       tryPlay();
       v.addEventListener('loadedmetadata', tryPlay, { once: true });
       v.addEventListener('canplay', tryPlay, { once: true });
+      // drop the logo loader once the video is actually showing frames
+      v.addEventListener('playing', hideLoader, { once: true });
+      v.addEventListener('canplaythrough', hideLoader, { once: true });
+      // if the video can't load at all, don't trap the user behind the loader
+      v.addEventListener('error', hideLoader, { once: true });
+      if (v.readyState >= 3) hideLoader();
+      // safety net: never let the loader linger more than a few seconds
+      this._loaderTimeout = setTimeout(hideLoader, 4000);
       // last-ditch: kick play on first user interaction if browser blocked it
       const kick = () => { tryPlay(); document.removeEventListener('pointerdown', kick); document.removeEventListener('keydown', kick); };
       document.addEventListener('pointerdown', kick, { once: true });
       document.addEventListener('keydown', kick, { once: true });
+    } else {
+      hideLoader();
     }
 
     // --- scroll progress bar + back-to-top visibility ---
@@ -810,6 +818,7 @@ class Component extends DCLogic {
     if (this._statsIo) this._statsIo.disconnect();
     if (this._onProjClick) document.removeEventListener('click', this._onProjClick);
     if (this._onLbKey) document.removeEventListener('keydown', this._onLbKey);
+    if (this._loaderTimeout) clearTimeout(this._loaderTimeout);
   }
 
   renderVals() {
