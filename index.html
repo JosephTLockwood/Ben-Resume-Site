@@ -621,10 +621,13 @@ class Component extends DCLogic {
       if (v.readyState >= 3) hideLoader();
       // safety net: never let the loader linger more than a few seconds
       this._loaderTimeout = setTimeout(hideLoader, 4000);
-      // last-ditch: kick play on first user interaction if browser blocked it
-      const kick = () => { tryPlay(); document.removeEventListener('pointerdown', kick); document.removeEventListener('keydown', kick); };
+      // last-ditch: kick play on first user interaction if browser blocked it,
+      // and never keep the loader up once the user is already interacting —
+      // on a slow connection it must not sit on top of the hero blocking scroll.
+      const kick = () => { tryPlay(); hideLoader(); document.removeEventListener('pointerdown', kick); document.removeEventListener('keydown', kick); document.removeEventListener('touchstart', kick); };
       document.addEventListener('pointerdown', kick, { once: true });
       document.addEventListener('keydown', kick, { once: true });
+      document.addEventListener('touchstart', kick, { once: true, passive: true });
     } else {
       hideLoader();
     }
